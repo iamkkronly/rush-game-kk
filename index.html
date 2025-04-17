@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quick Reflex Challenge PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --text-color: white;
+            --primary-accent: #00e5ff;
+            --card-bg: rgba(255,255,255,0.2);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-color: #f0f0f0;
+                --text-color: #333;
+                --primary-accent: #007acc;
+                --card-bg: rgba(0,0,0,0.1);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            margin-top: 30px;
+            padding: 10px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-accent);
+            text-shadow: 0 0 10px var(--primary-accent);
+        }
+
+        .subheading {
+            color: #00ff90;
+            margin-bottom: 20px;
+        }
+
+        .settings {
+            margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        select, button {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: none;
+            min-width: 120px;
+        }
+
+        button {
+            background: #00c853;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:hover {
+            box-shadow: 0 0 10px rgba(0,200,83,0.5);
+        }
+
+        .coin-counter {
+            font-size: 1.4rem;
+            margin: 15px;
+            background: #ff9100;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        #gameArea {
+            width: 90%;
+            max-width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            border: 2px dashed var(--text-color);
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        .target {
+            width: 50px;
+            height: 50px;
+            background: yellow;
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+            animation: glow 1s infinite alternate;
+            box-shadow: 0 0 20px yellow;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            user-select: none;
+        }
+
+        .target.golden {
+            background: gold;
+            box-shadow: 0 0 30px gold;
+            animation: goldenGlow 0.8s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px yellow; }
+            to { box-shadow: 0 0 20px yellow; }
+        }
+
+        @keyframes goldenGlow {
+            0% { box-shadow: 0 0 10px gold; transform: scale(1); }
+            50% { box-shadow: 0 0 30px gold; transform: scale(1.1); }
+            100% { box-shadow: 0 0 10px gold; transform: scale(1); }
+        }
+
+        .fire {
+            animation: fireGlow 0.5s alternate infinite;
+        }
+
+        @keyframes fireGlow {
+            0% { box-shadow: 0 0 5px red; }
+            100% { box-shadow: 0 0 30px orange; }
+        }
+
+        .leaderboard, .shop {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 8px;
+            width: 150px;
+            font-size: 1rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .emoji {
+            font-size: 2.5rem;
+        }
+
+        .btn-claim {
+            margin-top: 15px;
+            background: limegreen;
+            padding: 12px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .rules {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .copyright {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #aaa;
+            padding-bottom: 20px;
+        }
+
+        /* New Features CSS */
+        .health-bar {
+            width: 200px;
+            height: 20px;
+            border: 2px solid var(--text-color);
+            margin: 10px auto;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .health-fill {
+            width: 100%;
+            height: 100%;
+            background: #00ff00;
+            transition: width 0.3s;
+        }
+
+        .streak-counter {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,165,0,0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 100;
+        }
+
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px;
+            border-radius: 50%;
+            background: var(--primary-accent);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+        }
+
+        .skin-selector {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .skin-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            border: 2px solid transparent;
+        }
+
+        .skin-option.selected {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 10px var(--primary-accent);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                width: 120px;
+                padding: 10px;
+            }
+            
+            #gameArea {
+                height: 300px;
+            }
+            
+            .settings {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quick Reflex Challenge PRO</h1>
+        <div class="subheading">Beat Dhoni (340ms) and Win Samsung S23 Ultra 512GB!</div>
+        
+        <div class="health-bar">
+            <div class="health-fill" id="healthFill"></div>
+        </div>
+        
+        <div class="streak-counter" id="streakCounter">
+            Streak: 0x
+        </div>
+        
+        <div class="settings">
+            <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="startTimedChallenge()">30-Second Challenge</button>
+            <button onclick="resetGame()">Reset</button>
+            <button onclick="openSkinSelector()">Skins</button>
+            <button onclick="toggleMusic()" id="musicBtn">🔊 Music On</button>
+        </div>
+        
+        <div class="coin-counter">
+            Coins: <span id="coinCount">0</span> 🪙
+        </div>
+        
+        <div id="gameArea"></div>
+        
+        <div class="rules">
+            Click the targets FAST to earn coins! Maintain your streak for bonus coins. 
+            Watch for golden targets ⭐ that give 50 coins! Don't miss too many or game over!
+        </div>
+        
+        <h2 style="margin-top:30px;">Leaderboard</h2>
+        <div class="leaderboard" id="leaderboard">
+            <!-- Top Players will appear here -->
+        </div>
+        
+        <h2 style="margin-top:30px;">Coin Shop</h2>
+        <div class="shop">
+            <div class="card">
+                🎖️<br><b>Pro Badge</b><br>500 Coins<br>
+                <button onclick="buyItem('badge',500)">Buy</button>
+            </div>
+            <div class="card">
+                🎟️<br><b>Scratch Card</b><br>2000 Coins<br>
+                <button onclick="buyItem('scratch',2000)">Buy</button>
+            </div>
+            <div class="card">
+                🎁<br><b>Mystery Box</b><br>5000 Coins<br>
+                <button onclick="buyItem('box',5000)">Buy</button>
+            </div>
+            <div class="card">
+                ⚡<br><b>Lightning Skin</b><br>1000 Coins<br>
+                <button onclick="buyItem('lightning_skin',1000)">Buy</button>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            Copyright © 2025 Quick Reflex Challenge. Built for Legends.
+        </div>
+    </div>
+    
+    <div class="theme-toggle" onclick="toggleTheme()">
+        🌓
+    </div>
+    
+    <script>
+        // Game State
+        let coinCount = parseInt(localStorage.getItem('coins')) || 0;
+        let difficulty = 'easy';
+        let gameInterval;
+        let lastClickTime;
+        let reactionTimes = [];
+        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        let currentStreak = 0;
+        let health = 3;
+        let isBonusActive = false;
+        let selectedSkin = localStorage.getItem('selectedSkin') || 'default';
+        let lastLogin = localStorage.getItem('lastLogin');
+        let musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
+        let timedChallengeActive = false;
+        let timedChallengeTimer;
+        let timedChallengeSeconds = 30;
+        let timedChallengeClicks = 0;
+        
+        // DOM Elements
+        const coinCountEl = document.getElementById('coinCount');
+        const streakCounterEl = document.getElementById('streakCounter');
+        const healthFillEl = document.getElementById('healthFill');
+        const musicBtn = document.getElementById('musicBtn');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            coinCountEl.textContent = coinCount;
+            updateHealthDisplay();
+            checkDailyBonus();
+            renderLeaderboard();
+            updateMusicButton();
+            
+            // Set initial theme based on preference
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        });
+        
+        // Game Functions
+        function getSpeed() {
+            if (difficulty === 'easy') return 1500;
+            if (difficulty === 'medium') return 1000;
+            if (difficulty === 'hard') return 600;
+        }
+        
+        function getCoinValue() {
+            if (difficulty === 'easy') return 1;
+            if (difficulty === 'medium') return 2;
+            if (difficulty === 'hard') return 4;
+        }
+        
+        function startGame() {
+            difficulty = document.getElementById('difficulty').value;
+            if (gameInterval) clearInterval(gameInterval);
+            resetGameState();
+            spawnTarget();
+            gameInterval = setInterval(spawnTarget, getSpeed());
+        }
+        
+        function startTimedChallenge() {
+            difficulty = 'hard';
+            resetGameState();
+            timedChallengeActive = true;
+            timedChallengeClicks = 0;
+            timedChallengeSeconds = 30;
+            
+            // Update UI
+            document.getElementById('gameArea').innerHTML = '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2rem;" id="challengeTimer">30</div>';
+            
+            // Start timer
+            timedChallengeTimer = setInterval(function() {
+                timedChallengeSeconds--;
+                document.getElementById('challengeTimer').textContent = timedChallengeSeconds;
+                
+                if (timedChallengeSeconds <= 0) {
+                    clearInterval(timedChallengeTimer);
+                    endTimedChallenge();
+                }
+            }, 1000);
+            
+            // Spawn targets rapidly
+            gameInterval = setInterval(spawnTarget, 300);
+        }
+        
+        function endTimedChallenge() {
+            clearInterval(gameInterval);
+            timedChallengeActive = false;
+            showPopup(`Timed Challenge Complete!<br>You clicked ${timedChallengeClicks} times in 30 seconds!<br>Earned ${timedChallengeClicks * 5} coins!`);
+            coinCount += timedChallengeClicks * 5;
+            saveCoins();
+        }
+        
+        function resetGameState() {
+            currentStreak = 0;
+            health = 3;
+            updateStreakDisplay();
+            updateHealthDisplay();
+            timedChallengeActive = false;
+            clearInterval(timedChallengeTimer);
+        }
+        
+        function resetGame() {
+            clearInterval(gameInterval);
+            clearInterval(timedChallengeTimer);
+            document.getElementById('gameArea').innerHTML = '';
+            reactionTimes = [];
+            resetGameState();
+        }
+        
+        function spawnTarget() {
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = '';
+            
+            // 15% chance for golden target when not in timed challenge
+            if (!timedChallengeActive && Math.random() < 0.15) {
+                createBonusTarget();
+            } else {
+                createNormalTarget();
+            }
+            
+            lastClickTime = Date.now();
+        }
+        
+        function createNormalTarget() {
+            const gameArea = document.getElementById('gameArea');
+            const target = document.createElement('div');
+            target.className = 'target ' + selectedSkin;
+            
+            // Apply skin-specific styling
+            switch(selectedSkin) {
+                case 'lightning_skin':
+                    target.innerHTML = '⚡';
+                    target.style.background = 'transparent';
+                    target.style.boxShadow = '0 0 20px blue';
+                    break;
+                case 'heart_skin':
+                    target.innerHTML = '❤️';
+                    target.style.background = 'transparent';
+                    target.style.boxShadow = '0 0 20px red';
+                    break;
+                default:
+                    target.style.background = 'yellow';
+            }
+            
+            target.style.top = Math.random() * (gameArea.offsetHeight - 50) + 'px';
+            target.style.left = Math.random() * (gameArea.offsetWidth - 50) + 'px';
+            target.onclick = targetClicked;
+            
+            // Add touch support for mobile
+            target.ontouchstart = function(e) {
+                e.preventDefault();
+                targetClicked.call(this);
+            };
+            
+            gameArea.appendChild(target);
+        }
+        
+        function createBonusTarget() {
+            const gameArea = document.getElementById('gameArea');
+            const target = document.createElement('div');
+            target.className = 'target golden';
+            target.innerHTML = '⭐';
+            target.style.top = Math.random() * (gameArea.offsetHeight - 50) + 'px';
+            target.style.left = Math.random() * (gameArea.offsetWidth - 50) + 'px';
+            target.onclick = function() {
+                coinCount += 50;
+                saveCoins();
+                activateSuperBoost();
+                this.remove();
+                playSound('bonus');
+                showPopup('+50 COINS!');
+            };
+            
+            // Add touch support for mobile
+            target.ontouchstart = function(e) {
+                e.preventDefault();
+                this.onclick();
+            };
+            
+            gameArea.appendChild(target);
+        }
+        
+        function targetClicked() {
+            const now = Date.now();
+            const reactionTime = now - lastClickTime;
+            reactionTimes.push(reactionTime);
+            
+            // Update streak
+            currentStreak++;
+            updateStreakDisplay();
+            
+            // Calculate coin reward with streak bonus
+            const streakMultiplier = Math.floor(currentStreak / 5) + 1;
+            const coinsEarned = getCoinValue() * streakMultiplier;
+            coinCount += coinsEarned;
+            
+            // Special effects for fast clicks
+            if (reactionTime < 300) {
+                this.classList.add('fire');
+            }
+            
+            if (reactionTime < 200) {
+                showPopup('SUPER FAST!');
+            }
+            
+            // Update timed challenge stats
+            if (timedChallengeActive) {
+                timedChallengeClicks++;
+            }
+            
+            // Save and update display
+            saveCoins();
+            playSound('click');
+            
+            // Check for Dhoni beat
+            checkWin(reactionTime);
+            
+            // Spawn new target unless in timed challenge
+            if (!timedChallengeActive) {
+                spawnTarget();
+            }
+        }
+        
+        function missTarget() {
+            currentStreak = 0;
+            updateStreakDisplay();
+            health--;
+            updateHealthDisplay();
+            playSound('miss');
+            
+            if (health <= 0) {
+                gameOver();
+            }
+            
+            if (!timedChallengeActive) {
+                spawnTarget();
+            }
+        }
+        
+        function gameOver() {
+            clearInterval(gameInterval);
+            clearInterval(timedChallengeTimer);
+            showPopup('GAME OVER!<br>Click Start to play again.');
+            resetGameState();
+        }
+        
+        function activateSuperBoost() {
+            isBonusActive = true;
+            showPopup('SUPER BOOST ACTIVATED!');
+            setTimeout(() => {
+                isBonusActive = false;
+                showPopup('Boost ended');
+            }, 10000);
+        }
+        
+        // UI Functions
+        function updateStreakDisplay() {
+            const multiplier = Math.floor(currentStreak / 5) + 1;
+            streakCounterEl.textContent = `Streak: ${currentStreak}x${multiplier}`;
+            
+            // Visual feedback for high streaks
+            if (currentStreak >= 5) {
+                streakCounterEl.style.background = 'rgba(255,50,50,0.9)';
+                streakCounterEl.style.boxShadow = '0 0 15px red';
+            } else if (currentStreak >= 3) {
+                streakCounterEl.style.background = 'rgba(255,165,0,0.9)';
+                streakCounterEl.style.boxShadow = '0 0 10px orange';
+            } else {
+                streakCounterEl.style.background = 'rgba(255,165,0,0.9)';
+                streakCounterEl.style.boxShadow = 'none';
+            }
+        }
+        
+        function updateHealthDisplay() {
+            healthFillEl.style.width = `${(health / 3) * 100}%`;
+            
+            // Color change based on health
+            if (health <= 1) {
+                healthFillEl.style.background = 'red';
+            } else if (health == 2) {
+                healthFillEl.style.background = 'orange';
+            } else {
+                healthFillEl.style.background = '#00ff00';
+            }
+        }
+        
+        function saveCoins() {
+            localStorage.setItem('coins', coinCount);
+            coinCountEl.textContent = coinCount;
+        }
+        
+        function checkWin(time) {
+            if (time <= 340) {
+                clearInterval(gameInterval);
+                clearInterval(timedChallengeTimer);
+                triggerFireworks();
+                playSound('win');
+                
+                setTimeout(() => {
+                    if(confirm('You Beat Dhoni!\n\nYour reaction time: ' + time + 'ms\n\nClick OK to Claim Your Prize!')) {
+                        window.location.href = "https://wa.me/918000000000?text=I%20won%20Quick%20Reflex%20Challenge!%20My%20time:%20" + time + "ms";
+                    }
+                }, 500);
+            }
+        }
+        
+        function triggerFireworks() {
+            // Create simple fireworks effect with DOM elements
+            const fireworks = document.createElement('div');
+            fireworks.className = 'fireworks';
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '5px';
+                particle.style.height = '5px';
+                particle.style.borderRadius = '50%';
+                particle.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.boxShadow = `0 0 ${Math.random() * 10 + 5}px currentColor`;
+                
+                const animation = particle.animate([
+                    { transform: 'scale(1)', opacity: 1 },
+                    { transform: 'scale(3)', opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'cubic-bezier(0,0.2,0.8,1)'
+                });
+                
+                animation.onfinish = () => particle.remove();
+                fireworks.appendChild(particle);
+            }
+            
+            document.body.appendChild(fireworks);
+            setTimeout(() => fireworks.remove(), 1000);
+        }
+        
+        function showPopup(message) {
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+            popup.innerHTML = message;
+            
+            document.body.appendChild(popup);
+            setTimeout(() => {
+                popup.style.opacity = '0';
+                setTimeout(() => popup.remove(), 300);
+            }, 1500);
+        }
+        
+        // Shop and Inventory
+        function buyItem(item, cost) {
+            if (coinCount >= cost) {
+                coinCount -= cost;
+                saveCoins();
+                
+                switch(item) {
+                    case 'badge':
+                        showPopup('Pro Badge Unlocked!');
+                        break;
+                    case 'scratch':
+                        showPopup('Scratch Card Purchased!');
+                        break;
+                    case 'box':
+                        showPopup('Mystery Box Purchased!');
+                        break;
+                    case 'lightning_skin':
+                        selectedSkin = 'lightning_skin';
+                        localStorage.setItem('selectedSkin', selectedSkin);
+                        showPopup('Lightning Skin Equipped!');
+                        break;
+                }
+            } else {
+                showPopup('Not enough coins!');
+            }
+        }
+        
+        function openSkinSelector() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            
+            const skinSelector = document.createElement('div');
+            skinSelector.className = 'popup';
+            skinSelector.innerHTML = `
+                <h3>Select Target Skin</h3>
+                <div class="skin-selector">
+                    <div class="skin-option ${selectedSkin === 'default' ? 'selected' : ''}" onclick="selectSkin('default')">
+                        <div style="width:30px;height:30px;border-radius:50%;background:yellow;"></div>
+                    </div>
+                    <div class="skin-option ${selectedSkin === 'lightning_skin' ? 'selected' : ''}" onclick="selectSkin('lightning_skin')">
+                        ⚡
+                    </div>
+                    <div class="skin-option ${selectedSkin === 'heart_skin' ? 'selected' : ''}" onclick="selectSkin('heart_skin')">
+                        ❤️
+                    </div>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" style="margin-top:15px;">Close</button>
+            `;
+            
+            modal.appendChild(skinSelector);
+            document.body.appendChild(modal);
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+        }
+        
+        function selectSkin(skin) {
+            selectedSkin = skin;
+            localStorage.setItem('selectedSkin', skin);
+            document.querySelectorAll('.skin-option').forEach(el => {
+                el.classList.toggle('selected', el.getAttribute('onclick').includes(skin));
+            });
+        }
+        
+        // Daily Bonus
+        function checkDailyBonus() {
+            const today = new Date().toDateString();
+            if (lastLogin !== today) {
+                coinCount += 100;
+                saveCoins();
+                lastLogin = today;
+                localStorage.setItem('lastLogin', today);
+                showPopup('Daily Bonus: 100 coins!');
+            }
+        }
+        
+        // Leaderboard
+        function updateLeaderboard(time) {
+            leaderboard.push({ time: time, date: new Date().toLocaleString() });
+            leaderboard.sort((a,b) => a.time - b.time);
+            leaderboard = leaderboard.slice(0,5);
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+            renderLeaderboard();
+        }
+        
+        function renderLeaderboard() {
+            const board = document.getElementById('leaderboard');
+            board.innerHTML = '';
+            
+            if (leaderboard.length === 0) {
+                board.innerHTML = '<div class="card">No records yet!</div>';
+                return;
+            }
+            
+            leaderboard.forEach((entry, index) => {
+                board.innerHTML += `
+                    <div class="card">
+                        #${index+1}<br>
+                        ${entry.time}ms<br>
+                        <small>${entry.date}</small>
+                    </div>
+                `;
+            });
+        }
+        
+        // Theme Toggle
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+        
+        // Sound System
+        function playSound(type) {
+            if (!musicEnabled) return;
+            
+            // Simple sound effects using the Web Audio API
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                switch(type) {
+                    case 'click':
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.value = 800;
+                        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
+                        oscillator.start();
+                        oscillator.stop(audioCtx.currentTime + 0.3);
+                        break;
+                    case 'miss':
+                        oscillator.type = 'sine';
+                        oscillator.frequency.value = 200;
+                        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.5);
+                        oscillator.start();
+                        oscillator.stop(audioCtx.currentTime + 0.5);
+                        break;
+                    case 'bonus':
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+                        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.2);
+                        oscillator.start();
+                        oscillator.stop(audioCtx.currentTime + 0.2);
+                        break;
+                    case 'win':
+                        // Play a little victory tune
+                        const notes = [659, 659, 659, 523, 587, 659];
+                        const noteTimes = [0, 0.1, 0.2, 0.3, 0.4, 0.5];
+                        
+                        notes.forEach((freq, i) => {
+                            const osc = audioCtx.createOscillator();
+                            const gn = audioCtx.createGain();
+                            osc.connect(gn);
+                            gn.connect(audioCtx.destination);
+                            osc.type = 'square';
+                            osc.frequency.value = freq;
+                            gn.gain.setValueAtTime(0.3, audioCtx.currentTime + noteTimes[i]);
+                            gn.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + noteTimes[i] + 0.1);
+                            osc.start(audioCtx.currentTime + noteTimes[i]);
+                            osc.stop(audioCtx.currentTime + noteTimes[i] + 0.1);
+                        });
+                        break;
+                }
+            } catch (e) {
+                console.log('Audio error:', e);
+            }
+        }
+        
+        function toggleMusic() {
+            musicEnabled = !musicEnabled;
+            localStorage.setItem('musicEnabled', musicEnabled);
+            updateMusicButton();
+        }
+        
+        function updateMusicButton() {
+            musicBtn.textContent = musicEnabled ? '🔊 Music On' : '🔇 Music Off';
+        }
+        
+        // Prevent cheating
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            if(e.key == "F12" || (e.ctrlKey && e.shiftKey && e.key == "I")) {
+                e.preventDefault();
+            }
+        });
+        
+        // Miss detection
+        document.getElementById('gameArea').onclick = function(e) {
+            if (e.target === this && gameInterval) {
+                missTarget();
+            }
+        };
+    </script>
+</body>
+</html>
